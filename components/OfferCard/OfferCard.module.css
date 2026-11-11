@@ -1,0 +1,91 @@
+.card {
+  position: relative;
+  background: #fff;
+  border: 2px solid #4a4fd6;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.badge {
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #1ba67a;
+  margin-bottom: 12px;
+}
+
+.badgeBlue {
+  background: #2f6fe4;
+}
+
+.logo {
+  height: 80px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.sum {
+  font-size: 22px;
+  font-weight: 800;
+  color: #2f5fe0;
+  margin-bottom: 4px;
+}
+
+.rate {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e03131;
+  margin-bottom: 16px;
+}
+
+.btn {
+  width: 100%;
+  display: block;
+  text-align: center;
+  padding: 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #2d8cf0, #4a4fd6);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    opacity 0.2s,
+    transform 0.1s;
+}
+
+.btn:hover {
+  opacity: 0.92;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 640px) {
+  .sum {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 440px) {
+  .card {
+    padding: 46px 10px 20px;
+  }
+}

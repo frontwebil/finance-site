@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+
+model Offer {
+  id           String   @id @default(uuid())
+  name         String   
+  logoUrl      String   
+
+
+  maxAmount    Int      
+  minRate      Float    
+  currency     String   @default("₴")
+
+  promoText    String?  
+
+
+  buttonText   String   @default("Отримати →")
+  affiliateUrl String   
+
+  isActive     Boolean  @default(true) 
+  order        Int      @default(0)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("offers")
+}
+
+model User {
+  id      Int    @id @default(autoincrement())
+  
+  name String
+  userName String
+
+  chat_id BigInt
+  user_id BigInt
+
+
+   @@unique([user_id, chat_id])
+}
