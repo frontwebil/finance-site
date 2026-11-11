@@ -1,14 +1,13 @@
-import styles from "./Header.module.css";
+import "./Header.css";
 
 export default function Header() {
   return (
-    <header className={styles.header}>
-      <div className={styles.container}>
-        <div className={styles.left}>
-          <span className={styles.logoText}>FinStep</span>
-          <span className={styles.appBadge}>MINI APP</span>
+    <header className="header">
+      <div className="header__container">
+        <div className="header__left">
+          <span className="header__logo">FinWay Україна</span>
         </div>
-        <span className={styles.link}>Кредит онлайн</span>
+        <span className="header__link">Кредит онлайн</span>
       </div>
     </header>
   );

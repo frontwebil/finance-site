@@ -1,6 +1,6 @@
 import type { Offer } from "@/data/offers";
 import OfferCard from "@/components/OfferCard";
-import styles from "./OfferGrid.module.css";
+import "./OfferGrid.css";
 
 type OfferGridProps = {
   offers: Offer[];
@@ -8,7 +8,7 @@ type OfferGridProps = {
 
 export default function OfferGrid({ offers }: OfferGridProps) {
   return (
-    <section className={styles.grid}>
+    <section className="offer-grid">
       {offers.map((offer, i) => (
         <OfferCard key={offer.id} offer={offer} preload={i < 3} />
       ))}

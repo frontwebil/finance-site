@@ -1,9 +1,9 @@
-.card {
+.offer-card {
   position: relative;
   background: #fff;
   border: 2px solid #4a4fd6;
   border-radius: 14px;
-  padding: 20px;
+  padding: 20px 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,13 +11,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.top {
+.offer-card__top {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 6px;
 }
 
-.badge {
+.offer-card__badge {
   white-space: nowrap;
   font-size: 12px;
   font-weight: 600;
@@ -28,11 +29,11 @@
   margin-bottom: 12px;
 }
 
-.badgeBlue {
+.offer-card__badge--blue {
   background: #2f6fe4;
 }
 
-.logo {
+.offer-card__logo {
   height: 80px;
   width: auto;
   max-width: 100%;
@@ -40,52 +41,52 @@
   margin-bottom: 12px;
 }
 
-.sum {
+.offer-card__sum {
   font-size: 22px;
   font-weight: 800;
   color: #2f5fe0;
   margin-bottom: 4px;
 }
 
-.rate {
+.offer-card__rate {
   font-size: 14px;
   font-weight: 700;
   color: #e03131;
   margin-bottom: 16px;
 }
 
-.btn {
+.offer-card__btn {
   width: 100%;
   display: block;
   text-align: center;
-  padding: 14px;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #2d8cf0, #4a4fd6);
-  color: #fff;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background-color: #5b3cc4;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 700;
   text-decoration: none;
-  transition:
-    opacity 0.2s,
-    transform 0.1s;
+  box-shadow: 0 4px 12px rgba(91, 60, 196, 0.25);
+  transition: all 0.2s ease-in-out;
 }
 
-.btn:hover {
-  opacity: 0.92;
+.offer-card__btn:hover {
+  background-color: #4b2fb3;
+  box-shadow: 0 6px 18px rgba(91, 60, 196, 0.35);
 }
 
-.btn:active {
-  transform: scale(0.98);
+.offer-card__btn:active {
+  box-shadow: 0 2px 6px rgba(91, 60, 196, 0.2);
 }
 
 @media (max-width: 640px) {
-  .sum {
+  .offer-card__sum {
     font-size: 20px;
   }
 }
 
 @media (max-width: 440px) {
-  .card {
-    padding: 46px 10px 20px;
+  .offer-card {
+    padding-top: 16px;
   }
 }
