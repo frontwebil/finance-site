@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "FinWay — Кредит онлайн на картку до 90 000 грн в Україні",
+    default: "FinWay - Кредит онлайн на картку до 90 000 грн в Україні",
     template: "%s | FinWay",
   },
   description:
