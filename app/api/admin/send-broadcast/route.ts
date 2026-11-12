@@ -1,6 +1,7 @@
-import { WEB_APP_URL } from "@/data/offers";
+import { parseBroadcastContent } from "@/lib/broadcast-validation";
 import { verifySession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { sendTelegramMessage } from "@/lib/telegram";
 import { NextResponse } from "next/server";
 
 const BATCH_SIZE = 25;
@@ -11,39 +12,12 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { message, buttonText, buttonType, buttonUrl, cursor, maxId } =
-      await req.json();
-    const normalizedMessage = typeof message === "string" ? message.trim() : "";
-    const normalizedType =
-      buttonType === "link" || buttonType === "none" ? buttonType : "miniapp";
-    const normalizedText =
-      typeof buttonText === "string" ? buttonText.trim() : "";
-    const normalizedUrl =
-      normalizedType === "miniapp"
-        ? WEB_APP_URL
-        : typeof buttonUrl === "string"
-          ? buttonUrl.trim()
-          : "";
+    const body = await req.json();
+    const { cursor, maxId } = body ?? {};
+    const content = parseBroadcastContent(body);
 
-    if (!normalizedMessage || (normalizedType !== "none" && !normalizedText)) {
-      return NextResponse.json(
-        { error: "Повідомлення та текст кнопки обов'язкові" },
-        { status: 400 },
-      );
-    }
-
-    if (normalizedType === "link") {
-      try {
-        const url = new URL(normalizedUrl);
-        if (url.protocol !== "https:" && url.protocol !== "http:") {
-          throw new Error("Unsupported URL protocol");
-        }
-      } catch {
-        return NextResponse.json(
-          { error: "Некоректне посилання для кнопки" },
-          { status: 400 },
-        );
-      }
+    if (!content.ok) {
+      return NextResponse.json({ error: content.error }, { status: 400 });
     }
 
     const normalizedCursor = Number.isSafeInteger(cursor) && cursor >= 0 ? cursor : 0;
@@ -87,35 +61,14 @@ export async function POST(req: Request) {
       );
     }
 
-    const button =
-      normalizedType === "link"
-        ? { text: normalizedText, url: normalizedUrl }
-        : normalizedType === "miniapp"
-          ? { text: normalizedText, web_app: { url: WEB_APP_URL } }
-          : null;
     let failed = 0;
 
     for (const user of users) {
-      try {
-        const response = await fetch(
-          `https://api.telegram.org/bot${token}/sendMessage`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: user.chat_id.toString(),
-              text: normalizedMessage,
-              parse_mode: "HTML",
-              ...(button
-                ? { reply_markup: { inline_keyboard: [[button]] } }
-                : {}),
-            }),
-          },
-        );
-        const data = await response.json();
-        if (!response.ok || !data.ok) failed += 1;
-      } catch (error) {
-        console.error(`Broadcast message failed for user ${user.id}:`, error);
+      const result = await sendTelegramMessage(token, user.chat_id.toString(), content.value);
+      if (!result.ok) {
+        if (result.kind === "network") {
+          console.error(`Broadcast message failed for user ${user.id}:`, result.description);
+        }
         failed += 1;
       }
     }
