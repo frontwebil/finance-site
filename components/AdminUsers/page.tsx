@@ -1,7 +1,9 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import LogoutButton from "@/components/AdminDashboard/LogoutButton";
+import SendBroadcast from "./SendBroadcast";
 import AdminUsersTable from "./AdminUsersTable";
+import "./style.css";
 import "./../AdminDashboard/page.css";
 
 export default function AdminUsersPage() {
@@ -28,7 +30,10 @@ export default function AdminUsersPage() {
             <p className="eyebrow">Керування</p>
             <h1>Користувачі</h1>
           </div>
-          <LogoutButton />
+          <div className="users-header-actions">
+            <SendBroadcast />
+            <LogoutButton />
+          </div>
         </header>
 
         <section className="panel users-panel" aria-label="Список користувачів">

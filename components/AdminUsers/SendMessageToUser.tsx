@@ -2,10 +2,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { WEB_APP_URL } from "@/data/offers";
 
 export function SendMessageToUser({ chat_id }: { chat_id: any }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [message, setMessage] = useState("");
+  const [buttonText, setButtonText] = useState("Відкрити");
+  const [buttonType, setButtonType] = useState<"miniapp" | "link">("miniapp");
+  const [buttonUrl, setButtonUrl] = useState(WEB_APP_URL);
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
@@ -20,6 +24,28 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
   const handleSend = async () => {
     if (!message.trim() || isLoading) return;
 
+    const trimmedButtonText = buttonText.trim();
+    const effectiveButtonUrl = buttonType === "miniapp" ? WEB_APP_URL : buttonUrl.trim();
+
+    if (!trimmedButtonText) {
+      setToast({ type: "error", message: "Введіть текст кнопки" });
+      return;
+    }
+
+    if (buttonType === "link" && !effectiveButtonUrl) {
+      setToast({ type: "error", message: "Додайте посилання для кнопки" });
+      return;
+    }
+
+    if (buttonType === "link") {
+      try {
+        new URL(effectiveButtonUrl);
+      } catch {
+        setToast({ type: "error", message: "Некоректне посилання для кнопки" });
+        return;
+      }
+    }
+
     setIsLoading(true);
 
     try {
@@ -31,7 +57,9 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
         body: JSON.stringify({
           chat_id: chat_id.toString(),
           message,
-          parse_mode: "HTML",
+          buttonText: trimmedButtonText,
+          buttonType,
+          buttonUrl: effectiveButtonUrl,
         }),
       });
 
@@ -43,10 +71,13 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
       }
 
       if (!response.ok) {
-        throw new Error(data?.message || "Помилка відправки повідомлення");
+        throw new Error(data?.error || data?.message || "Помилка відправки повідомлення");
       }
 
       setMessage("");
+      setButtonText("Відкрити");
+      setButtonType("miniapp");
+      setButtonUrl(WEB_APP_URL);
       setIsOpenModal(false);
       setToast({ type: "success", message: "Повідомлення успішно надіслано" });
     } catch (error) {
@@ -80,6 +111,52 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
               onChange={(e) => setMessage(e.target.value)}
               rows={5}
             />
+
+            <div className="cta-block">
+              <label className="field-label">Текст кнопки</label>
+              <input
+                type="text"
+                value={buttonText}
+                onChange={(e) => setButtonText(e.target.value)}
+                placeholder="Наприклад: Відкрити"
+              />
+            </div>
+
+            <div className="cta-block">
+              <label className="field-label">Тип кнопки</label>
+              <div className="toggle-group" role="radiogroup" aria-label="Тип кнопки">
+                {[
+                  { value: "miniapp", label: "Mini app" },
+                  { value: "link", label: "Посилання" },
+                ].map((option) => (
+                  <label
+                    key={option.value}
+                    className={`toggle-option ${buttonType === option.value ? "selected" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="buttonType"
+                      checked={buttonType === option.value}
+                      onChange={() => setButtonType(option.value as "miniapp" | "link")}
+                    />
+                    <span className="checkmark" aria-hidden="true" />
+                    <span>{option.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {buttonType === "link" && (
+              <div className="cta-block">
+                <label className="field-label">Посилання</label>
+                <input
+                  type="url"
+                  value={buttonUrl}
+                  onChange={(e) => setButtonUrl(e.target.value)}
+                  placeholder="https://example.com"
+                />
+              </div>
+            )}
 
             <div className="modal__buttons">
               <button onClick={() => setIsOpenModal(false)} disabled={isLoading}>
@@ -135,6 +212,93 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
           vertical-align: middle;
+        }
+
+        .cta-block {
+          margin-top: 14px;
+        }
+
+        .field-label {
+          display: block;
+          margin-bottom: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        textarea {
+          width: 100%;
+          border: 1px solid #d1d5db;
+          border-radius: 10px;
+          padding: 10px 12px;
+          font: inherit;
+          background: #fff;
+          box-sizing: border-box;
+        }
+
+        textarea {
+          resize: vertical;
+          min-height: 110px;
+        }
+
+        .toggle-group {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .toggle-option {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 999px;
+          background: #f9fafb;
+          cursor: pointer;
+          user-select: none;
+          transition: all 0.2s ease;
+        }
+
+        .toggle-option.selected {
+          background: #e6f7ee;
+          border-color: #22a06b;
+          color: #0f6d42;
+        }
+
+        .toggle-option input {
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .checkmark {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          border: 2px solid #9ca3af;
+          position: relative;
+          display: inline-block;
+          background: #fff;
+        }
+
+        .toggle-option.selected .checkmark {
+          border-color: #22a06b;
+          background: #22a06b;
+        }
+
+        .toggle-option.selected .checkmark::after {
+          content: "";
+          position: absolute;
+          left: 4px;
+          top: 1px;
+          width: 4px;
+          height: 8px;
+          border: solid #fff;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
         }
 
         @keyframes spin {
