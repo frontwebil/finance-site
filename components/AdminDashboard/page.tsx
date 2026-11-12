@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import "./page.css";
-import axios from "axios";
+import LogoutButton from "./LogoutButton";
 
 type AdminDashboardProps = {
   data: {
@@ -13,17 +13,6 @@ type AdminDashboardProps = {
 };
 
 export default function AdminDashboardPage({ data }: AdminDashboardProps) {
-  const router = useRouter();
-  const handleLogout = async () => {
-    try {
-      await axios.post("/api/admin/logout");
-      router.replace("/admin/login");
-      router.refresh();
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
-  };
-
   const stats = [
     {
       label: "Всього користувачів",
@@ -43,10 +32,10 @@ export default function AdminDashboardPage({ data }: AdminDashboardProps) {
       <aside className="sidebar">
         <div className="sidebar__brand">FinWay Admin</div>
         <nav className="sidebar__nav">
-          <a className="is-active" href="#">
+          <Link className="is-active" href="/admin" aria-current="page">
             Головна
-          </a>
-          <a href="#">Користувачі</a>
+          </Link>
+          <Link href="/admin/users">Користувачі</Link>
           {/* <a href="#">Статистика</a> */}
           {/* <a href="#">Налаштування</a> */}
         </nav>
@@ -58,13 +47,7 @@ export default function AdminDashboardPage({ data }: AdminDashboardProps) {
             <p className="eyebrow">Огляд</p>
             <h1>Панель управління</h1>
           </div>
-          <button
-            type="button"
-            className="logout-button"
-            onClick={handleLogout}
-          >
-            Вийти
-          </button>
+          <LogoutButton />
         </header>
 
         <div className="stats-grid">

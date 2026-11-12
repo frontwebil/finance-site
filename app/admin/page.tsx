@@ -1,7 +1,10 @@
+import { connection } from "next/server";
 import AdminDashboardPage from "@/components/AdminDashboard/page";
 import prisma from "@/lib/prisma";
 
 export default async function page() {
+  await connection();
+
   const now = new Date();
 
   const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
