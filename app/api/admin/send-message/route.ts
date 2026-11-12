@@ -35,6 +35,18 @@ export async function POST(req: Request) {
           chat_id,
           text: message,
           parse_mode: "HTML",
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "Test",
+                  web_app: {
+                    url: "https://finance-site-ashy.vercel.app",
+                  },
+                },
+              ],
+            ],
+          },
         }),
       },
     );
