@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import Header from "@/components/Header";
 import OfferGrid from "@/components/OfferGrid";
+import { Loader } from "@/components/Loader/loader";
 import Disclaimer from "@/components/Disclaimer";
-import { offers } from "@/data/offers";
 import prisma from "@/lib/prisma";
 import "./page.css";
 
@@ -13,7 +13,7 @@ export default function Page() {
       <Header />
       <main className="page">
         <h1 className="page__title">Кредит онлайн</h1>
-        <Suspense fallback={<OfferGrid offers={offers} />}>
+        <Suspense fallback={<Loader />}>
           <ManagedOfferGrid />
         </Suspense>
         <Disclaimer />
@@ -29,5 +29,5 @@ async function ManagedOfferGrid() {
     orderBy: [{ order: "asc" }, { createdAt: "desc" }],
   });
 
-  return <OfferGrid offers={managedOffers.length ? managedOffers : offers} />;
+  return <OfferGrid offers={managedOffers} />;
 }
