@@ -16,7 +16,7 @@ export default function Page() {
         <Suspense fallback={<Loader />}>
           <ManagedOfferGrid />
         </Suspense>
-        <Disclaimer />
+        {/* <Disclaimer /> */}
       </main>
     </>
   );
