@@ -18,6 +18,7 @@ export default function AdminUsersPage() {
           >
             Користувачі
           </Link>
+          <Link href="/admin/offers">Офери</Link>
         </nav>
       </aside>
 

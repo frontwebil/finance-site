@@ -36,6 +36,7 @@ export default function AdminDashboardPage({ data }: AdminDashboardProps) {
             Головна
           </Link>
           <Link href="/admin/users">Користувачі</Link>
+          <Link href="/admin/offers">Офери</Link>
           {/* <a href="#">Статистика</a> */}
           {/* <a href="#">Налаштування</a> */}
         </nav>

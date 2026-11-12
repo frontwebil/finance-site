@@ -1,8 +1,17 @@
+import { Suspense } from "react";
 import { connection } from "next/server";
 import AdminDashboardPage from "@/components/AdminDashboard/page";
 import prisma from "@/lib/prisma";
 
-export default async function page() {
+export default function page() {
+  return (
+    <Suspense fallback={<main aria-busy="true">Завантаження статистики...</main>}>
+      <AdminDashboardData />
+    </Suspense>
+  );
+}
+
+async function AdminDashboardData() {
   await connection();
 
   const now = new Date();
@@ -29,10 +38,5 @@ export default async function page() {
       },
     }),
   ]);
-  console.log(totalUsers, users24h, users7d);
-  return (
-    <>
-      <AdminDashboardPage data={{ totalUsers, users24h, users7d }} />
-    </>
-  );
+  return <AdminDashboardPage data={{ totalUsers, users24h, users7d }} />;
 }

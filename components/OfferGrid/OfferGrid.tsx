@@ -1,9 +1,9 @@
 import type { Offer } from "@/data/offers";
-import OfferCard from "@/components/OfferCard";
+import OfferCard, { type ManagedOffer } from "@/components/OfferCard/OfferCard";
 import "./OfferGrid.css";
 
 type OfferGridProps = {
-  offers: Offer[];
+  offers: Array<Offer | ManagedOffer>;
 };
 
 export default function OfferGrid({ offers }: OfferGridProps) {
