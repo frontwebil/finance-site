@@ -29,33 +29,39 @@ export default function OfferCard({ offer, preload = false }: OfferCardProps) {
   const rate = isManagedOffer ? `від ${offer.minRate}%` : offer.rate;
   const badge = isManagedOffer ? offer.promoText : offer.badge;
   const href = isManagedOffer ? offer.affiliateUrl : WEB_APP_URL;
-  const buttonText = isManagedOffer ? offer.buttonText : "Отримати →";
+  const buttonText = isManagedOffer ? offer.buttonText : "Отримати гроші";
 
   return (
     <article className="offer-card">
+      {badge && (
+        <span
+          className={!isManagedOffer && offer.badgeBlue
+            ? "offer-card__badge offer-card__badge--blue"
+            : "offer-card__badge"}
+        >
+          {badge}
+        </span>
+      )}
       <div className="offer-card__top">
-        {badge && (
-          <span
-            className={!isManagedOffer && offer.badgeBlue
-              ? "offer-card__badge offer-card__badge--blue"
-              : "offer-card__badge"}
-          >
-            {badge}
-          </span>
-        )}
-        {logo && (
-          <Image
-            className="offer-card__logo"
-            src={logo}
-            alt={alt}
-            width={240}
-            height={80}
-            preload={preload}
-            unoptimized={isManagedOffer}
-          />
-        )}
-        <div className="offer-card__sum">{sum}</div>
-        <div className="offer-card__rate">{rate}</div>
+        <div className="offer-card__logo-wrap">
+          {logo && (
+            <Image
+              className="offer-card__logo"
+              src={logo}
+              alt={alt}
+              width={240}
+              height={80}
+              preload={preload}
+              unoptimized={isManagedOffer}
+            />
+          )}
+        </div>
+        <div className="offer-card__info">
+          <div className="offer-card__label">Сума:</div>
+          <div className="offer-card__value">{sum}</div>
+          <div className="offer-card__label">Відсоток:</div>
+          <div className="offer-card__value">{rate}</div>
+        </div>
       </div>
       <a
         className="offer-card__btn"

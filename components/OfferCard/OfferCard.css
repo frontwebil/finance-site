@@ -1,92 +1,139 @@
 .offer-card {
   position: relative;
+  margin-top: 12px;
   background: #fff;
-  border: 2px solid #4a4fd6;
-  border-radius: 14px;
-  padding: 20px 0 0;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  padding: 0 0 10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .offer-card__top {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 6px;
+  text-align: center;
 }
 
+/* Бейдж — «язичок», що виступає над верхнім краєм картки */
 .offer-card__badge {
-  white-space: nowrap;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  max-width: 80%;
   padding: 4px 10px;
-  border-radius: 999px;
-  background: #1ba67a;
-  margin-bottom: 12px;
+  border-radius: 4px;
+  background: #9b6cf2;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .offer-card__badge--blue {
   background: #2f6fe4;
 }
 
+.offer-card__logo-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 10px 14px;
+  border-bottom: 1px solid #e2e2e2;
+}
+
 .offer-card__logo {
-  height: 80px;
+  height: 64px;
   width: auto;
   max-width: 100%;
   object-fit: contain;
-  margin-bottom: 12px;
 }
 
-.offer-card__sum {
-  font-size: 22px;
-  font-weight: 800;
-  color: #2f5fe0;
-  margin-bottom: 4px;
+.offer-card__info {
+  width: 100%;
+  padding: 12px 8px 14px;
 }
 
-.offer-card__rate {
+.offer-card__label {
   font-size: 14px;
+  color: #6b6b6b;
+  line-height: 1.3;
+}
+
+.offer-card__value {
+  font-size: 18px;
   font-weight: 700;
-  color: #e03131;
-  margin-bottom: 16px;
+  color: #1f1f1f;
+  line-height: 1.3;
+}
+
+.offer-card__value + .offer-card__label {
+  margin-top: 6px;
 }
 
 .offer-card__btn {
-  width: 100%;
   display: block;
-  text-align: center;
-  padding: 14px 20px;
-  border-radius: 12px;
-  background-color: #5b3cc4;
-  color: #ffffff;
-  font-size: 16px;
+  margin: 0 10px;
+  padding: 12px 10px;
+  border-radius: 8px;
+  background-color: #d0101b;
+  color: #fff;
+  font-size: 15px;
   font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(91, 60, 196, 0.25);
-  transition: all 0.2s ease-in-out;
+  box-shadow: 0 3px 8px rgba(208, 16, 27, 0.25);
+  transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .offer-card__btn:hover {
-  background-color: #4b2fb3;
-  box-shadow: 0 6px 18px rgba(91, 60, 196, 0.35);
+  background-color: #b00d17;
+  box-shadow: 0 5px 14px rgba(208, 16, 27, 0.35);
 }
 
 .offer-card__btn:active {
-  box-shadow: 0 2px 6px rgba(91, 60, 196, 0.2);
+  box-shadow: 0 2px 5px rgba(208, 16, 27, 0.2);
 }
 
 @media (max-width: 640px) {
-  .offer-card__sum {
-    font-size: 20px;
+  .offer-card__logo {
+    height: 52px;
+  }
+
+  .offer-card__label {
+    font-size: 13px;
+  }
+
+  .offer-card__value {
+    font-size: 16px;
+  }
+
+  .offer-card__btn {
+    margin: 0 8px;
+    font-size: 13px;
+    padding: 11px 6px;
   }
 }
 
 @media (max-width: 440px) {
-  .offer-card {
-    padding-top: 16px;
+  .offer-card__badge {
+    max-width: 94%;
+    width: max-content;
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+
+  .offer-card__logo-wrap {
+    padding-top: 26px;
   }
 }
