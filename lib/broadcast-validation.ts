@@ -1,6 +1,7 @@
 import { isValidSendTime } from "./kyiv-time";
 
 export const MAX_MESSAGE_LENGTH = 4096;
+export const MAX_CAPTION_LENGTH = 1024;
 export const MAX_TITLE_LENGTH = 100;
 
 export type ButtonType = "miniapp" | "link" | "none";
@@ -10,6 +11,7 @@ export type BroadcastContent = {
   buttonType: ButtonType;
   buttonText: string | null;
   buttonUrl: string | null;
+  photoUrl: string | null;
 };
 
 export type ScheduleInput = BroadcastContent & {
@@ -40,12 +42,33 @@ export function parseBroadcastContent(input: unknown): Parsed<BroadcastContent> 
     data.buttonType === "link" || data.buttonType === "none" ? data.buttonType : "miniapp";
   const buttonText = asTrimmedString(data.buttonText);
   const buttonUrl = asTrimmedString(data.buttonUrl);
+  const photoUrl = asTrimmedString(data.photoUrl);
 
-  if (!message || (buttonType !== "none" && !buttonText)) {
+  if (!message && !photoUrl) {
+    return { ok: false, error: "Додайте текст повідомлення або фото" };
+  }
+
+  if (buttonType !== "none" && !buttonText) {
     return { ok: false, error: "Повідомлення та текст кнопки обов'язкові" };
   }
 
-  if (message.length > MAX_MESSAGE_LENGTH) {
+  if (photoUrl) {
+    let isHttps = false;
+    try {
+      isHttps = new URL(photoUrl).protocol === "https:";
+    } catch {
+      isHttps = false;
+    }
+    if (!isHttps) {
+      return { ok: false, error: "Некоректне посилання на фото" };
+    }
+    if (message.length > MAX_CAPTION_LENGTH) {
+      return {
+        ok: false,
+        error: `Текст під фото задовгий: максимум ${MAX_CAPTION_LENGTH} символи`,
+      };
+    }
+  } else if (message.length > MAX_MESSAGE_LENGTH) {
     return {
       ok: false,
       error: `Повідомлення задовге: максимум ${MAX_MESSAGE_LENGTH} символів`,
@@ -63,6 +86,7 @@ export function parseBroadcastContent(input: unknown): Parsed<BroadcastContent> 
       buttonType,
       buttonText: buttonType === "none" ? null : buttonText,
       buttonUrl: buttonType === "link" ? buttonUrl : null,
+      photoUrl: photoUrl || null,
     },
   };
 }

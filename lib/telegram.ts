@@ -55,18 +55,28 @@ export async function sendTelegramMessage(
   content: BroadcastContent,
 ): Promise<TelegramSendResult> {
   const replyMarkup = buildReplyMarkup(content);
+  const markup = replyMarkup ? { reply_markup: replyMarkup } : {};
+  const [method, payload] = content.photoUrl
+    ? [
+        "sendPhoto",
+        {
+          chat_id: chatId,
+          photo: content.photoUrl,
+          ...(content.message ? { caption: content.message, parse_mode: "HTML" } : {}),
+          ...markup,
+        },
+      ]
+    : [
+        "sendMessage",
+        { chat_id: chatId, text: content.message, parse_mode: "HTML", ...markup },
+      ];
 
   let response: Response;
   try {
-    response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: content.message,
-        parse_mode: "HTML",
-        ...(replyMarkup ? { reply_markup: replyMarkup } : {}),
-      }),
+      body: JSON.stringify(payload),
     });
   } catch (error) {
     return {
