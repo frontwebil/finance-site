@@ -1,5 +1,7 @@
 import prisma from "@/lib/prisma";
 import DeleteUserButton from "./DeleteUserButton";
+import { SendMessageToUser } from "./SendMessageToUser";
+import './style.css'
 
 export default async function AdminUsersTable() {
   const users = await prisma.user.findMany({
@@ -20,7 +22,7 @@ export default async function AdminUsersTable() {
             <th>Username</th>
             <th>Chat ID</th>
             <th>Дата реєстрації</th>
-            <th>Дія</th>
+            <th className="users-table-last-column">Дія</th>
           </tr>
         </thead>
         <tbody>
@@ -31,8 +33,9 @@ export default async function AdminUsersTable() {
               <td>{user.userName}</td>
               <td>{user.chat_id.toString()}</td>
               <td>{user.createdAt.toLocaleString("uk-UA")}</td>
-              <td>
+              <td className="users-table__buttons">
                 <DeleteUserButton id={user.id} name={user.name} />
+                <SendMessageToUser chat_id={user.chat_id}/>
               </td>
             </tr>
           ))}
