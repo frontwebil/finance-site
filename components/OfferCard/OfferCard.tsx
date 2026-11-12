@@ -26,7 +26,7 @@ export default function OfferCard({ offer, preload = false }: OfferCardProps) {
   const sum = isManagedOffer
     ? `до ${offer.maxAmount.toLocaleString("uk-UA")} ${offer.currency}`
     : offer.sum;
-  const rate = isManagedOffer ? `від ${offer.minRate}%` : offer.rate;
+  const rate = isManagedOffer ? `${offer.minRate}%` : offer.rate;
   const badge = isManagedOffer ? offer.promoText : offer.badge;
   const href = isManagedOffer ? offer.affiliateUrl : WEB_APP_URL;
   const buttonText = isManagedOffer ? offer.buttonText : "Отримати гроші";
