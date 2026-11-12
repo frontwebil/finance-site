@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import Link from "next/link";
+import AdminSidebar from "@/components/AdminSidebar/AdminSidebar";
 import LogoutButton from "@/components/AdminDashboard/LogoutButton";
 import SendBroadcast from "./SendBroadcast";
 import AdminUsersTable from "./AdminUsersTable";
@@ -9,20 +9,7 @@ import "./../AdminDashboard/page.css";
 export default function AdminUsersPage() {
   return (
     <main className="dashboard-page">
-      <aside className="sidebar">
-        <div className="sidebar__brand">FinWay Admin</div>
-        <nav className="sidebar__nav">
-          <Link href="/admin">Головна</Link>
-          <Link
-            className="is-active"
-            href="/admin/users"
-            aria-current="page"
-          >
-            Користувачі
-          </Link>
-          <Link href="/admin/offers">Офери</Link>
-        </nav>
-      </aside>
+      <AdminSidebar active="users" />
 
       <section className="content">
         <header className="topbar">

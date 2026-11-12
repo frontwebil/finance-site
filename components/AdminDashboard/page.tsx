@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import AdminSidebar from "@/components/AdminSidebar/AdminSidebar";
 import "./page.css";
 import LogoutButton from "./LogoutButton";
 
@@ -29,18 +29,7 @@ export default function AdminDashboardPage({ data }: AdminDashboardProps) {
   ];
   return (
     <main className="dashboard-page">
-      <aside className="sidebar">
-        <div className="sidebar__brand">FinWay Admin</div>
-        <nav className="sidebar__nav">
-          <Link className="is-active" href="/admin" aria-current="page">
-            Головна
-          </Link>
-          <Link href="/admin/users">Користувачі</Link>
-          <Link href="/admin/offers">Офери</Link>
-          {/* <a href="#">Статистика</a> */}
-          {/* <a href="#">Налаштування</a> */}
-        </nav>
-      </aside>
+      <AdminSidebar active="home" />
 
       <section className="content">
         <header className="topbar">
