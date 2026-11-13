@@ -18,6 +18,7 @@ export type ScheduleDto = {
   buttonType: ButtonType;
   buttonText: string | null;
   buttonUrl: string | null;
+  photoUrl: string | null;
   sendTime: string;
   isActive: boolean;
   nextRunAt: string | null;

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import PhotoField from "@/components/AdminBroadcasts/PhotoField";
 import { WEB_APP_URL } from "@/data/offers";
+import { MAX_CAPTION_LENGTH } from "@/lib/broadcast-validation";
 
 type BroadcastBatchResult = {
   attempted: number;
@@ -19,6 +21,8 @@ export default function SendBroadcast() {
     "miniapp",
   );
   const [buttonUrl, setButtonUrl] = useState("");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [progress, setProgress] = useState({ sent: 0, failed: 0 });
   const [result, setResult] = useState<string | null>(null);
@@ -37,12 +41,18 @@ export default function SendBroadcast() {
     const effectiveButtonUrl =
       buttonType === "miniapp" ? WEB_APP_URL : buttonUrl.trim();
 
-    if (!trimmedMessage || (buttonType !== "none" && !trimmedButtonText)) {
-      setError(
-        buttonType === "none"
-          ? "Введіть текст повідомлення."
-          : "Введіть повідомлення та текст кнопки.",
-      );
+    if (!trimmedMessage && !photoUrl) {
+      setError("Введіть текст повідомлення або додайте фото.");
+      return;
+    }
+
+    if (buttonType !== "none" && !trimmedButtonText) {
+      setError("Введіть текст кнопки.");
+      return;
+    }
+
+    if (photoUrl && trimmedMessage.length > MAX_CAPTION_LENGTH) {
+      setError(`Текст під фото задовгий: максимум ${MAX_CAPTION_LENGTH} символи.`);
       return;
     }
 
@@ -86,6 +96,7 @@ export default function SendBroadcast() {
             buttonText: trimmedButtonText,
             buttonType,
             buttonUrl: effectiveButtonUrl,
+            photoUrl,
             cursor,
             maxId,
           }),
@@ -158,8 +169,18 @@ export default function SendBroadcast() {
                 <p className="broadcast-warning">
                   Повідомлення буде надіслано всім користувачам зі списку.
                 </p>
+                <PhotoField
+                  value={photoUrl}
+                  onChange={setPhotoUrl}
+                  onUploadingChange={setUploading}
+                  disabled={isSending}
+                />
                 <textarea
-                  placeholder="Введіть текст повідомлення..."
+                  placeholder={
+                    photoUrl
+                      ? "Текст під фото (необов'язково, до 1024 символів)..."
+                      : "Введіть текст повідомлення..."
+                  }
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
                   rows={5}
@@ -254,7 +275,7 @@ export default function SendBroadcast() {
                   <button
                     type="button"
                     onClick={handleBroadcast}
-                    disabled={isSending || !message.trim()}
+                    disabled={isSending || uploading || (!message.trim() && !photoUrl)}
                   >
                     {isSending ? "Надсилається..." : "Надіслати всім"}
                   </button>

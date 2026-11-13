@@ -34,6 +34,7 @@ function runContent(run: BroadcastRun): BroadcastContent {
     buttonType: run.buttonType as ButtonType,
     buttonText: run.buttonText,
     buttonUrl: run.buttonUrl,
+    photoUrl: run.photoUrl,
   };
 }
 
@@ -60,6 +61,7 @@ async function planDueRuns(now: Date) {
         buttonType: schedule.buttonType,
         buttonText: schedule.buttonText,
         buttonUrl: schedule.buttonUrl,
+        photoUrl: schedule.photoUrl,
       };
 
       if (late) {

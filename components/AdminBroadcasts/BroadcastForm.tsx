@@ -2,11 +2,13 @@
 
 import { useState, type FormEvent } from "react";
 import {
+  MAX_CAPTION_LENGTH,
   MAX_MESSAGE_LENGTH,
   parseScheduleInput,
   type ButtonType,
   type ScheduleInput,
 } from "@/lib/broadcast-validation";
+import PhotoField from "./PhotoField";
 
 type BroadcastFormProps = {
   initial?: ScheduleInput;
@@ -27,9 +29,12 @@ export default function BroadcastForm({ initial, onSubmit, onClose }: BroadcastF
   const [buttonType, setButtonType] = useState<ButtonType>(initial?.buttonType ?? "miniapp");
   const [buttonText, setButtonText] = useState(initial?.buttonText ?? "Відкрити");
   const [buttonUrl, setButtonUrl] = useState(initial?.buttonUrl ?? "");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(initial?.photoUrl ?? null);
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const messageLimit = photoUrl ? MAX_CAPTION_LENGTH : MAX_MESSAGE_LENGTH;
 
   const close = () => {
     if (!saving) onClose();
@@ -44,6 +49,7 @@ export default function BroadcastForm({ initial, onSubmit, onClose }: BroadcastF
       buttonType,
       buttonText,
       buttonUrl,
+      photoUrl,
       isActive,
     });
     if (!parsed.ok) {
@@ -97,8 +103,15 @@ export default function BroadcastForm({ initial, onSubmit, onClose }: BroadcastF
           </label>
         </div>
 
+        <PhotoField
+          value={photoUrl}
+          onChange={setPhotoUrl}
+          onUploadingChange={setUploading}
+          disabled={saving}
+        />
+
         <label className="bc-field">
-          <span>Текст повідомлення</span>
+          <span>{photoUrl ? "Текст під фото (необов'язково)" : "Текст повідомлення"}</span>
           <textarea
             value={message}
             rows={6}
@@ -106,8 +119,8 @@ export default function BroadcastForm({ initial, onSubmit, onClose }: BroadcastF
             onChange={(event) => setMessage(event.target.value)}
             disabled={saving}
           />
-          <small className={message.trim().length > MAX_MESSAGE_LENGTH ? "bc-hint bc-hint--error" : "bc-hint"}>
-            Підтримується HTML-форматування Telegram · {message.trim().length} / {MAX_MESSAGE_LENGTH}
+          <small className={message.trim().length > messageLimit ? "bc-hint bc-hint--error" : "bc-hint"}>
+            Підтримується HTML-форматування Telegram · {message.trim().length} / {messageLimit}
           </small>
         </label>
 
@@ -174,7 +187,7 @@ export default function BroadcastForm({ initial, onSubmit, onClose }: BroadcastF
           <button type="button" onClick={close} disabled={saving}>
             Скасувати
           </button>
-          <button type="submit" disabled={saving}>
+          <button type="submit" disabled={saving || uploading}>
             {saving ? "Збереження..." : "Зберегти"}
           </button>
         </div>

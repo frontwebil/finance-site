@@ -56,6 +56,7 @@ model BroadcastSchedule {
   buttonType String         @default("miniapp")
   buttonText String?
   buttonUrl  String?
+  photoUrl   String?
   sendTime   String
   isActive   Boolean        @default(true)
   nextRunAt  DateTime?
@@ -76,6 +77,7 @@ model BroadcastRun {
   buttonType   String
   buttonText   String?
   buttonUrl    String?
+  photoUrl     String?
   status       String            @default("running") // running | done | failed | skipped
   maxUserId    Int               @default(0)
   cursor       Int               @default(0)

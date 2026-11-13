@@ -64,6 +64,7 @@ function toInput(schedule: ScheduleDto): ScheduleInput {
     buttonType: schedule.buttonType,
     buttonText: schedule.buttonText,
     buttonUrl: schedule.buttonUrl,
+    photoUrl: schedule.photoUrl,
   };
 }
 
@@ -219,6 +220,7 @@ export default function AdminBroadcastsPage({
                     <div className="bc-card__title">
                       <strong>{schedule.title}</strong>
                       <span className="bc-card__time">{schedule.sendTime} щодня</span>
+                      {schedule.photoUrl && <span className="bc-card__badge">📷 з фото</span>}
                     </div>
                     <p className="bc-card__meta">
                       {schedule.isActive && schedule.nextRunAt
