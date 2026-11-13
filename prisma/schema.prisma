@@ -48,3 +48,68 @@ model User {
 
    @@unique([user_id, chat_id])
 }
+
+model BroadcastSchedule {
+  id         String         @id @default(uuid())
+  title      String
+  message    String
+  buttonType String         @default("miniapp")
+  buttonText String?
+  buttonUrl  String?
+  photoUrl   String?
+  sendTime   String
+  isActive   Boolean        @default(true)
+  nextRunAt  DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  runs       BroadcastRun[]
+
+  @@index([isActive, nextRunAt])
+  @@map("broadcast_schedules")
+}
+
+model BroadcastRun {
+  id           String            @id @default(uuid())
+  scheduleId   String
+  schedule     BroadcastSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduledFor DateTime
+  message      String
+  buttonType   String
+  buttonText   String?
+  buttonUrl    String?
+  photoUrl     String?
+  status       String            @default("running") // running | done | failed | skipped
+  maxUserId    Int               @default(0)
+  cursor       Int               @default(0)
+  sent         Int               @default(0)
+  failed       Int               @default(0)
+  errorSummary Json              @default("{}")
+  lockedUntil  DateTime?
+  startedAt    DateTime          @default(now())
+  finishedAt   DateTime?
+
+  @@unique([scheduleId, scheduledFor])
+  @@index([status])
+  @@map("broadcast_runs")
+}
+
+model BroadcastLog {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  level      String // info | warn | error
+  message    String
+  scheduleId String?
+  runId      String?
+  details    Json?
+
+  @@index([createdAt])
+  @@index([scheduleId, createdAt])
+  @@map("broadcast_logs")
+}
+
+model CronHeartbeat {
+  id           Int      @id @default(1)
+  lastCalledAt DateTime
+
+  @@map("cron_heartbeat")
+}

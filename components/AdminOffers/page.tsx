@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, type FormEvent, type ChangeEvent } from "react";
-import Link from "next/link";
+import AdminSidebar from "@/components/AdminSidebar/AdminSidebar";
 import LogoutButton from "@/components/AdminDashboard/LogoutButton";
 import OfferCard from "@/components/OfferCard";
 import "@/components/AdminDashboard/page.css";
@@ -207,20 +207,7 @@ export default function AdminOffersPage({
 
   return (
     <main className="dashboard-page">
-      <aside className="sidebar">
-        <div className="sidebar__brand">FinWay Admin</div>
-        <nav className="sidebar__nav">
-          <Link href="/admin">Головна</Link>
-          <Link href="/admin/users">Користувачі</Link>
-          <Link
-            className="is-active"
-            href="/admin/offers"
-            aria-current="page"
-          >
-            Офери
-          </Link>
-        </nav>
-      </aside>
+      <AdminSidebar active="offers" />
 
       <section className="content">
         <header className="topbar">

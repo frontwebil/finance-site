@@ -1,0 +1,78 @@
+.photo-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.photo-field__label {
+  color: #1f2937;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.photo-field__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.photo-field__button {
+  display: inline-flex;
+  align-items: center;
+  border: 1px dashed #94a3b8;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #0f172a;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.photo-field__input:focus-visible + .photo-field__button,
+.photo-field__button:hover {
+  border-color: #0837d3;
+}
+
+.photo-field__button--danger {
+  border-style: solid;
+  border-color: #fecaca;
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.photo-field__preview {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.photo-field__preview img {
+  width: 160px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.photo-field__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.photo-field__hint {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.photo-field__error {
+  color: #b91c1c;
+  font-size: 12px;
+}

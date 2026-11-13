@@ -1,5 +1,6 @@
-import { WEB_APP_URL } from "@/data/offers";
 import { verifySession } from "@/lib/auth";
+import { parseBroadcastContent } from "@/lib/broadcast-validation";
+import { sendTelegramMessage } from "@/lib/telegram";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -8,41 +9,25 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { chat_id, message, buttonText, buttonType, buttonUrl } = await req.json();
-    if (!chat_id || !message?.trim()) {
-      return NextResponse.json(
-        { error: "Chat ID та повідомлення обов'язкові" },
-        { status: 400 },
-      );
+    const body = await req.json();
+    const chatId = typeof body?.chat_id === "string" || typeof body?.chat_id === "number"
+      ? String(body.chat_id).trim()
+      : "";
+    if (!chatId) {
+      return NextResponse.json({ error: "Chat ID обов'язковий" }, { status: 400 });
     }
 
-    const normalizedText = (buttonText || "Перейти").trim();
-    const normalizedType = buttonType === "link" ? "link" : "miniapp";
-    const normalizedUrl =
-      normalizedType === "miniapp"
-        ? WEB_APP_URL
-        : (buttonUrl || WEB_APP_URL).trim();
-
-    if (!normalizedText) {
-      return NextResponse.json(
-        { error: "Текст кнопки обов'язковий" },
-        { status: 400 },
-      );
-    }
-
-    if (normalizedType === "link") {
-      try {
-        new URL(normalizedUrl);
-      } catch {
-        return NextResponse.json(
-          { error: "Некоректне посилання для кнопки" },
-          { status: 400 },
-        );
-      }
+    // Personal messages always carry a button; "Перейти" is the historical default text.
+    const content = parseBroadcastContent({
+      ...body,
+      buttonType: body.buttonType === "link" ? "link" : "miniapp",
+      buttonText: body.buttonText || "Перейти",
+    });
+    if (!content.ok) {
+      return NextResponse.json({ error: content.error }, { status: 400 });
     }
 
     const token = process.env.BOT_TELEGRAM_TOKEN;
-
     if (!token) {
       return NextResponse.json(
         { error: "BOT_TELEGRAM_TOKEN не налаштований" },
@@ -50,42 +35,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const button =
-      normalizedType === "link"
-        ? {
-            text: normalizedText,
-            url: normalizedUrl,
-          }
-        : {
-            text: normalizedText,
-            web_app: {
-              url: normalizedUrl,
-            },
-          };
-
-    const response = await fetch(
-      `https://api.telegram.org/bot${token}/sendMessage`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chat_id,
-          text: message,
-          parse_mode: "HTML",
-          reply_markup: {
-            inline_keyboard: [[button]],
-          },
-        }),
-      },
-    );
-
-    const data = await response.json();
-
-    if (!data.ok) {
+    const result = await sendTelegramMessage(token, chatId, content.value);
+    if (!result.ok) {
       return NextResponse.json(
-        { error: data.description || "Помилка Telegram API" },
+        { error: result.description || "Помилка Telegram API" },
         { status: 400 },
       );
     }
