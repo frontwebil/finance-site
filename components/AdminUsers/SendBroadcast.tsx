@@ -24,6 +24,7 @@ export default function SendBroadcast() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [progress, setProgress] = useState({ sent: 0, failed: 0 });
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +32,7 @@ export default function SendBroadcast() {
   const closeModal = () => {
     if (isSending) return;
     setIsOpen(false);
+    setConfirming(false);
     setError(null);
     setResult(null);
   };
@@ -68,14 +70,14 @@ export default function SendBroadcast() {
       }
     }
 
-    if (
-      !window.confirm(
-        "Надіслати це повідомлення всім користувачам зі списку?",
-      )
-    ) {
+    // In-modal confirmation instead of window.confirm(), which some embedded browsers block.
+    if (!confirming) {
+      setError(null);
+      setConfirming(true);
       return;
     }
 
+    setConfirming(false);
     setIsSending(true);
     setError(null);
     setResult(null);
@@ -263,21 +265,30 @@ export default function SendBroadcast() {
                     {error}
                   </p>
                 )}
+                {confirming && (
+                  <p className="broadcast-confirm" role="alert">
+                    Точно надіслати це повідомлення всім користувачам зі списку?
+                  </p>
+                )}
 
                 <div className="modal__buttons">
                   <button
                     type="button"
-                    onClick={closeModal}
+                    onClick={confirming ? () => setConfirming(false) : closeModal}
                     disabled={isSending}
                   >
-                    Скасувати
+                    {confirming ? "Назад" : "Скасувати"}
                   </button>
                   <button
                     type="button"
                     onClick={handleBroadcast}
                     disabled={isSending || uploading || (!message.trim() && !photoUrl)}
                   >
-                    {isSending ? "Надсилається..." : "Надіслати всім"}
+                    {isSending
+                      ? "Надсилається..."
+                      : confirming
+                        ? "Так, надіслати всім"
+                        : "Надіслати всім"}
                   </button>
                 </div>
               </>
@@ -317,6 +328,16 @@ export default function SendBroadcast() {
 
         .broadcast-error {
           color: #b91c1c;
+        }
+
+        .broadcast-confirm {
+          margin: 14px 0 0;
+          padding: 10px 12px;
+          border-radius: 10px;
+          background: #fef3c7;
+          color: #92400e;
+          font-size: 14px;
+          font-weight: 600;
         }
 
         .broadcast-result {

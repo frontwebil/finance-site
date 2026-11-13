@@ -89,6 +89,7 @@ export default function AdminBroadcastsPage({
   const [now, setNow] = useState(() => Date.now());
   const [editing, setEditing] = useState<ScheduleDto | "new" | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [logsVersion, setLogsVersion] = useState(0);
   const [error, setError] = useState("");
 
@@ -157,12 +158,13 @@ export default function AdminBroadcastsPage({
       }),
     );
 
+  // Two-step in-page confirmation instead of window.confirm(), which some embedded browsers block.
   const deleteSchedule = (schedule: ScheduleDto) => {
-    const runningNote =
-      schedule.lastRun?.status === "running"
-        ? " Відправка, що зараз триває, буде зупинена."
-        : "";
-    if (!window.confirm(`Видалити розсилку «${schedule.title}»?${runningNote}`)) return;
+    if (confirmDeleteId !== schedule.id) {
+      setConfirmDeleteId(schedule.id);
+      return;
+    }
+    setConfirmDeleteId(null);
     void runAction(schedule, () =>
       requestJson(`/api/admin/broadcasts/${schedule.id}`, { method: "DELETE" }),
     );
@@ -230,6 +232,13 @@ export default function AdminBroadcastsPage({
                     <p className="bc-card__meta">
                       Останній запуск: {schedule.lastRun ? runSummary(schedule.lastRun) : "ще не було"}
                     </p>
+                    {confirmDeleteId === schedule.id && (
+                      <p className="bc-card__confirm" role="alert">
+                        Натисніть «Так, видалити», щоб видалити «{schedule.title}».
+                        {schedule.lastRun?.status === "running" &&
+                          " Відправка, що зараз триває, буде зупинена."}
+                      </p>
+                    )}
                   </div>
                   <div className="bc-card__actions">
                     <label className="bc-switch">
@@ -255,8 +264,17 @@ export default function AdminBroadcastsPage({
                       onClick={() => deleteSchedule(schedule)}
                       disabled={busyId === schedule.id}
                     >
-                      Видалити
+                      {confirmDeleteId === schedule.id ? "Так, видалити" : "Видалити"}
                     </button>
+                    {confirmDeleteId === schedule.id && (
+                      <button
+                        type="button"
+                        className="bc-secondary"
+                        onClick={() => setConfirmDeleteId(null)}
+                      >
+                        Скасувати
+                      </button>
+                    )}
                   </div>
                 </li>
               ))}

@@ -114,6 +114,13 @@
   font-size: 0.88rem;
 }
 
+.bc-card__confirm {
+  margin-top: 6px;
+  color: #b91c1c;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
 .bc-card__badge {
   border-radius: 999px;
   background: #eef2ff;

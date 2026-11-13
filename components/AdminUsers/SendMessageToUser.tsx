@@ -2,7 +2,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import PhotoField from "@/components/AdminBroadcasts/PhotoField";
 import { WEB_APP_URL } from "@/data/offers";
+import { MAX_CAPTION_LENGTH } from "@/lib/broadcast-validation";
 
 export function SendMessageToUser({ chat_id }: { chat_id: any }) {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -10,7 +12,10 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
   const [buttonText, setButtonText] = useState("Відкрити");
   const [buttonType, setButtonType] = useState<"miniapp" | "link">("miniapp");
   const [buttonUrl, setButtonUrl] = useState(WEB_APP_URL);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const canSend = (Boolean(message.trim()) || Boolean(photoUrl)) && !uploading && !isLoading;
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   useEffect(() => {
@@ -22,7 +27,15 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
   }, [toast]);
 
   const handleSend = async () => {
-    if (!message.trim() || isLoading) return;
+    if (!canSend) return;
+
+    if (photoUrl && message.trim().length > MAX_CAPTION_LENGTH) {
+      setToast({
+        type: "error",
+        message: `Текст під фото задовгий: максимум ${MAX_CAPTION_LENGTH} символи`,
+      });
+      return;
+    }
 
     const trimmedButtonText = buttonText.trim();
     const effectiveButtonUrl = buttonType === "miniapp" ? WEB_APP_URL : buttonUrl.trim();
@@ -60,6 +73,7 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
           buttonText: trimmedButtonText,
           buttonType,
           buttonUrl: effectiveButtonUrl,
+          photoUrl,
         }),
       });
 
@@ -78,6 +92,7 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
       setButtonText("Відкрити");
       setButtonType("miniapp");
       setButtonUrl(WEB_APP_URL);
+      setPhotoUrl(null);
       setIsOpenModal(false);
       setToast({ type: "success", message: "Повідомлення успішно надіслано" });
     } catch (error) {
@@ -105,8 +120,19 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Надіслати повідомлення</h3>
 
+            <PhotoField
+              value={photoUrl}
+              onChange={setPhotoUrl}
+              onUploadingChange={setUploading}
+              disabled={isLoading}
+            />
+
             <textarea
-              placeholder="Введіть текст повідомлення..."
+              placeholder={
+                photoUrl
+                  ? "Текст під фото (необов'язково, до 1024 символів)..."
+                  : "Введіть текст повідомлення..."
+              }
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={5}
@@ -163,7 +189,7 @@ export function SendMessageToUser({ chat_id }: { chat_id: any }) {
                 Скасувати
               </button>
 
-              <button onClick={handleSend} disabled={!message.trim() || isLoading}>
+              <button onClick={handleSend} disabled={!canSend}>
                 {isLoading ? (
                   <>
                     <span className="send-btn-spinner" />
