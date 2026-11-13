@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, type FormEvent, type ChangeEvent, type DragEvent } from "react";
+import { moveItem } from "@/lib/offer-order";
 import AdminSidebar from "@/components/AdminSidebar/AdminSidebar";
 import LogoutButton from "@/components/AdminDashboard/LogoutButton";
 import OfferCard from "@/components/OfferCard";
@@ -59,6 +60,68 @@ export default function AdminOffersPage({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dropIndex, setDropIndex] = useState<number | null>(null);
+  const [savingOrder, setSavingOrder] = useState(false);
+
+  async function saveOrder(next: Offer[]) {
+    const previous = offers;
+    const reordered = next.map((offer, index) => ({ ...offer, order: index }));
+    setOffers(reordered);
+    if (editingId) {
+      const edited = reordered.find((offer) => offer.id === editingId);
+      if (edited) updateForm("order", String(edited.order));
+    }
+    setSavingOrder(true);
+    setError("");
+    setNotice("");
+    try {
+      const response = await fetch("/api/admin/offers/reorder", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: reordered.map((offer) => offer.id) }),
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) {
+        throw new Error(result.error ?? "Не вдалося зберегти порядок");
+      }
+      setNotice("Порядок збережено");
+    } catch (reason) {
+      setOffers(previous);
+      setError(reason instanceof Error ? reason.message : "Не вдалося зберегти порядок");
+    } finally {
+      setSavingOrder(false);
+    }
+  }
+
+  function moveOffer(from: number, to: number) {
+    if (savingOrder || from === to || to < 0 || to >= offers.length) return;
+    void saveOrder(moveItem(offers, from, to));
+  }
+
+  function resetDrag() {
+    setDragIndex(null);
+    setDropIndex(null);
+  }
+
+  function handleDragStart(event: DragEvent<HTMLElement>, index: number) {
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", offers[index].id);
+    setDragIndex(index);
+  }
+
+  function handleDragOver(event: DragEvent<HTMLElement>, index: number) {
+    if (dragIndex === null) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    if (dropIndex !== index) setDropIndex(index);
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>, index: number) {
+    event.preventDefault();
+    if (dragIndex !== null) moveOffer(dragIndex, index);
+    resetDrag();
+  }
 
   function updateForm<K extends keyof OfferForm>(
     key: K,
@@ -235,12 +298,59 @@ export default function AdminOffersPage({
               <h2>Усі офери</h2>
               <span>{offers.length} загалом</span>
             </div>
+            {offers.length > 1 && (
+              <p className="offers-list__hint">
+                Змінюйте порядок на сайті стрілочками ↑ ↓ або перетягуванням рядка за ⠿ (на
+                комп&apos;ютері).
+              </p>
+            )}
             {offers.length === 0 ? (
               <p className="users-empty">Оферів ще немає. Додайте перший.</p>
             ) : (
-              <div className="offers-list__items">
-                {offers.map((offer) => (
-                  <article className="offer-row" key={offer.id}>
+              <div className="offers-list__items" aria-busy={savingOrder}>
+                {offers.map((offer, index) => (
+                  <article
+                    className={[
+                      "offer-row",
+                      dragIndex === index ? "offer-row--dragging" : "",
+                      dropIndex === index && dragIndex !== null && dragIndex !== index
+                        ? dragIndex < index
+                          ? "offer-row--drop-after"
+                          : "offer-row--drop-before"
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    key={offer.id}
+                    draggable={!savingOrder}
+                    onDragStart={(event) => handleDragStart(event, index)}
+                    onDragOver={(event) => handleDragOver(event, index)}
+                    onDrop={(event) => handleDrop(event, index)}
+                    onDragEnd={resetDrag}
+                  >
+                    <div className="offer-row__order">
+                      <span className="offer-row__handle" aria-hidden="true" title="Перетягніть">
+                        ⠿
+                      </span>
+                      <button
+                        className="offer-row__arrow"
+                        type="button"
+                        onClick={() => moveOffer(index, index - 1)}
+                        disabled={savingOrder || index === 0}
+                        aria-label={`Підняти «${offer.name}» вище`}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        className="offer-row__arrow"
+                        type="button"
+                        onClick={() => moveOffer(index, index + 1)}
+                        disabled={savingOrder || index === offers.length - 1}
+                        aria-label={`Опустити «${offer.name}» нижче`}
+                      >
+                        ↓
+                      </button>
+                    </div>
                     {offer.logoUrl ? (
                       <Image
                         className="offer-row__logo"

@@ -15,13 +15,75 @@
   flex-direction: column;
 }
 
+.offers-list__hint {
+  margin: -8px 0 10px;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
 .offer-row {
   display: grid;
-  grid-template-columns: 80px minmax(0, 1fr) auto;
+  grid-template-columns: auto 80px minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
   padding: 14px 0;
   border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+  transition: opacity 0.15s ease;
+}
+
+.offer-row[draggable="true"] {
+  cursor: grab;
+}
+
+.offer-row--dragging {
+  opacity: 0.4;
+}
+
+.offer-row--drop-before {
+  box-shadow: inset 0 3px 0 #0837d3;
+}
+
+.offer-row--drop-after {
+  box-shadow: inset 0 -3px 0 #0837d3;
+}
+
+.offer-row__order {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.offer-row__handle {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+}
+
+.offer-row__arrow {
+  width: 28px;
+  height: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #f8fafc;
+  color: #334155;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.offer-row__arrow:hover:not(:disabled) {
+  border-color: #0837d3;
+  color: #0837d3;
+}
+
+.offer-row__arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 .offer-row:last-child {
@@ -268,8 +330,38 @@
   }
 
   .offer-row {
-    grid-template-columns: 64px minmax(0, 1fr) auto;
-    gap: 9px;
+    grid-template-columns: auto 64px minmax(0, 1fr);
+    grid-template-areas:
+      "order logo details"
+      "order actions actions";
+    gap: 8px 10px;
+  }
+
+  .offer-row__order {
+    grid-area: order;
+    align-self: center;
+  }
+
+  .offer-row > .offer-row__logo {
+    grid-area: logo;
+  }
+
+  .offer-row__details {
+    grid-area: details;
+  }
+
+  .offer-row__details strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .offer-row__handle {
+    display: none;
+  }
+
+  .offer-row__arrow {
+    width: 34px;
+    height: 30px;
   }
 
   .offer-row__logo {
@@ -277,6 +369,9 @@
   }
 
   .offer-row__actions {
-    align-items: flex-end;
+    grid-area: actions;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
   }
 }

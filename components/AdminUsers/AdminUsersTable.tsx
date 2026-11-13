@@ -28,11 +28,11 @@ export default async function AdminUsersTable() {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.name}</td>
-              <td>{user.userName}</td>
-              <td>{user.chat_id.toString()}</td>
-              <td>{user.createdAt.toLocaleString("uk-UA")}</td>
+              <td data-label="ID">{user.id}</td>
+              <td data-label="Ім’я">{user.name}</td>
+              <td data-label="Username">{user.userName}</td>
+              <td data-label="Chat ID">{user.chat_id.toString()}</td>
+              <td data-label="Дата реєстрації">{user.createdAt.toLocaleString("uk-UA")}</td>
               <td className="users-table__buttons">
                 <DeleteUserButton id={user.id} name={user.name} />
                 <SendMessageToUser chat_id={user.chat_id}/>

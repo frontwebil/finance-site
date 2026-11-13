@@ -256,6 +256,7 @@
 @media (max-width: 880px) {
   .dashboard-page {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
 
   .sidebar {
@@ -270,5 +271,126 @@
   .stats-grid,
   .panel-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    min-width: 0;
+    padding: 12px 16px 10px;
+  }
+
+  .sidebar__brand {
+    font-size: 1.05rem;
+    margin-bottom: 10px;
+  }
+
+  .sidebar__nav {
+    flex-wrap: nowrap;
+    gap: 6px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .sidebar__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar__nav a {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    white-space: nowrap;
+    font-size: 0.92rem;
+  }
+
+  .content {
+    padding: 20px 16px 32px;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .topbar h1 {
+    font-size: 1.75rem;
+    margin-top: 4px;
+  }
+
+  .users-header-actions {
+    flex-wrap: wrap;
+  }
+
+  .panel {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .panel__header {
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  /* Users table becomes a list of cards */
+  .users-table,
+  .users-table tbody,
+  .users-table tr,
+  .users-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .users-table thead {
+    display: none;
+  }
+
+  .users-table {
+    white-space: normal;
+  }
+
+  .users-table tr {
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .users-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .users-table td,
+  .users-table tbody tr:last-child td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 0;
+    border-bottom: 0;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .users-table td[data-label]::before {
+    content: attr(data-label);
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .users-table tbody tr td.users-table__buttons {
+    justify-content: flex-start;
+    flex-direction: row;
+    max-width: none;
+    margin: 8px 0 0;
+    padding-top: 6px;
   }
 }
